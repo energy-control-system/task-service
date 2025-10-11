@@ -48,19 +48,19 @@ type brigadeIDVars struct {
 	BrigadeID int `path:"brigadeID"`
 }
 
-func GetTaskByBrigade(s *task.Service) gorouter.Handler {
+func GetTasksByBrigade(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
 		var vars brigadeIDVars
 		if err := c.Vars(&vars); err != nil {
 			return fmt.Errorf("failed to read brigade id: %w", err)
 		}
 
-		t, err := s.GetByBrigade(c.Ctx(), vars.BrigadeID)
+		response, err := s.GetByBrigade(c.Ctx(), vars.BrigadeID)
 		if err != nil {
-			return fmt.Errorf("failed to get task by brigade id: %w", err)
+			return fmt.Errorf("failed to get tasks by brigade id: %w", err)
 		}
 
-		return c.WriteJson(http.StatusOK, t)
+		return c.WriteJson(http.StatusOK, response)
 	}
 }
 

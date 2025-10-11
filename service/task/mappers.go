@@ -18,3 +18,12 @@ func MapFromDB(t task.Task) Task {
 		UpdatedAt:   t.UpdatedAt,
 	}
 }
+
+func MapSliceFromDB(dbTasks []task.Task) []Task {
+	tasks := make([]Task, 0, len(dbTasks))
+	for _, t := range dbTasks {
+		tasks = append(tasks, MapFromDB(t))
+	}
+
+	return tasks
+}

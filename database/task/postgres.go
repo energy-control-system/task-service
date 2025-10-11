@@ -62,13 +62,13 @@ func (p *Postgres) GetByID(ctx context.Context, id int) (task Task, err error) {
 //go:embed sql/get_by_brigade.sql
 var getByBrigadeSQL string
 
-func (p *Postgres) GetByBrigade(ctx context.Context, brigadeID int) (task Task, err error) {
-	err = p.db.GetContext(ctx, &task, getByBrigadeSQL, brigadeID)
+func (p *Postgres) GetByBrigade(ctx context.Context, brigadeID int) (tasks []Task, err error) {
+	err = p.db.SelectContext(ctx, &tasks, getByBrigadeSQL, brigadeID)
 	if err != nil {
-		return Task{}, fmt.Errorf("p.db.GetContext: %w", err)
+		return nil, fmt.Errorf("p.db.SelectContext: %w", err)
 	}
 
-	return task, nil
+	return tasks, nil
 }
 
 //go:embed sql/start_task.sql

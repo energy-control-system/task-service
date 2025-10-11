@@ -55,13 +55,13 @@ func (s *Service) GetByID(ctx goctx.Context, id int) (Task, error) {
 	return MapFromDB(dbTask), nil
 }
 
-func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int) (Task, error) {
-	dbTask, err := s.taskRepository.GetByBrigade(ctx, brigadeID)
+func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int) ([]Task, error) {
+	dbTasks, err := s.taskRepository.GetByBrigade(ctx, brigadeID)
 	if err != nil {
-		return Task{}, fmt.Errorf("get task by brigade id %d from db: %w", brigadeID, err)
+		return nil, fmt.Errorf("get tasks by brigade id %d from db: %w", brigadeID, err)
 	}
 
-	return MapFromDB(dbTask), nil
+	return MapSliceFromDB(dbTasks), nil
 }
 
 func (s *Service) StartTask(ctx goctx.Context, log golog.Logger, id int) (Task, error) {
