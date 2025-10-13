@@ -52,7 +52,6 @@ type Inspection struct {
 	TaskID                  int         `json:"TaskID"`
 	Status                  Status      `json:"Status"`
 	Type                    *Type       `json:"Type"`
-	ActNumber               *string     `json:"ActNumber"`
 	Resolution              *Resolution `json:"Resolution"`
 	LimitReason             *string     `json:"LimitReason"`
 	Method                  *string     `json:"Method"`
