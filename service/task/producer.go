@@ -17,6 +17,7 @@ const (
 	EventTypeUnknown EventType = iota
 	EventTypeAdd
 	EventTypeStart
+	EventTypeFinish
 )
 
 type Event struct {

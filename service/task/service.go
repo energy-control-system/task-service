@@ -128,7 +128,7 @@ func (s *Service) handleFinishedInspection(ctx context.Context, log golog.Logger
 		return fmt.Errorf("finish task %d: %w", ins.TaskID, err)
 	}
 
-	go s.taskPublisher.Publish(goctx.Wrap(ctx), log, EventTypeStart, MapFromDB(dbTask))
+	go s.taskPublisher.Publish(goctx.Wrap(ctx), log, EventTypeFinish, MapFromDB(dbTask))
 
 	return nil
 }
