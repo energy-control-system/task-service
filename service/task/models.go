@@ -16,7 +16,7 @@ type Task struct {
 	BrigadeID   *int       `json:"BrigadeID,omitempty"`
 	ObjectID    int        `json:"ObjectID"`
 	PlanVisitAt *time.Time `json:"PlanVisitAt,omitempty"`
-	Status      int        `json:"Status"`
+	Status      Status     `json:"Status"`
 	Comment     *string    `json:"Comment,omitempty"`
 	StartedAt   *time.Time `json:"StartedAt,omitempty"`
 	FinishedAt  *time.Time `json:"FinishedAt,omitempty"`

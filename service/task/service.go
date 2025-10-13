@@ -41,7 +41,7 @@ func (s *Service) Add(ctx goctx.Context, log golog.Logger, request AddRequest) (
 
 	t := MapFromDB(dbTask)
 
-	go s.taskPublisher.Publish(ctx, log, EventTypeCreate, t)
+	go s.taskPublisher.Publish(ctx, log, EventTypeAdd, t)
 
 	return t, nil
 }
@@ -72,7 +72,7 @@ func (s *Service) StartTask(ctx goctx.Context, log golog.Logger, id int) (Task, 
 
 	t := MapFromDB(dbTask)
 
-	go s.taskPublisher.Publish(ctx, log, EventTypeUpdate, t)
+	go s.taskPublisher.Publish(ctx, log, EventTypeStart, t)
 
 	return t, nil
 }
@@ -95,10 +95,10 @@ func (s *Service) SubscriberOnInspectionEvent(mainCtx context.Context, log golog
 		}
 
 		switch event.Type {
-		case inspection.EventTypeCreate:
-			err = s.handleCreatedInspection(ctx, event.Inspection)
-		case inspection.EventTypeUpdate:
-			err = s.handleUpdatedInspection(ctx, log, event.Inspection)
+		case inspection.EventTypeStart:
+			err = s.handleStartedInspection(ctx, event.Inspection)
+		case inspection.EventTypeFinish:
+			err = s.handleFinishedInspection(ctx, log, event.Inspection)
 		default:
 			err = fmt.Errorf("unknown event type: %v", event.Type)
 		}
@@ -110,7 +110,7 @@ func (s *Service) SubscriberOnInspectionEvent(mainCtx context.Context, log golog
 	}
 }
 
-func (s *Service) handleCreatedInspection(ctx context.Context, ins inspection.Inspection) error {
+func (s *Service) handleStartedInspection(ctx context.Context, ins inspection.Inspection) error {
 	if ins.Status != inspection.StatusInWork {
 		return fmt.Errorf("invalid inspection status: %v", ins.Status)
 	}
@@ -118,9 +118,9 @@ func (s *Service) handleCreatedInspection(ctx context.Context, ins inspection.In
 	return nil
 }
 
-func (s *Service) handleUpdatedInspection(ctx context.Context, log golog.Logger, ins inspection.Inspection) error {
+func (s *Service) handleFinishedInspection(ctx context.Context, log golog.Logger, ins inspection.Inspection) error {
 	if ins.Status != inspection.StatusDone {
-		return nil
+		return fmt.Errorf("invalid inspection status: %v", ins.Status)
 	}
 
 	dbTask, err := s.taskRepository.FinishTask(ctx, ins.TaskID)
@@ -128,7 +128,7 @@ func (s *Service) handleUpdatedInspection(ctx context.Context, log golog.Logger,
 		return fmt.Errorf("finish task %d: %w", ins.TaskID, err)
 	}
 
-	go s.taskPublisher.Publish(goctx.Wrap(ctx), log, EventTypeUpdate, MapFromDB(dbTask))
+	go s.taskPublisher.Publish(goctx.Wrap(ctx), log, EventTypeStart, MapFromDB(dbTask))
 
 	return nil
 }

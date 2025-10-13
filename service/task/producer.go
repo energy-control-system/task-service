@@ -15,8 +15,8 @@ type EventType int
 
 const (
 	EventTypeUnknown EventType = iota
-	EventTypeCreate
-	EventTypeUpdate
+	EventTypeAdd
+	EventTypeStart
 )
 
 type Event struct {

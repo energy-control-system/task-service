@@ -10,7 +10,7 @@ func MapFromDB(t task.Task) Task {
 		BrigadeID:   t.BrigadeID,
 		ObjectID:    t.ObjectID,
 		PlanVisitAt: t.PlanVisitAt,
-		Status:      t.Status,
+		Status:      Status(t.Status),
 		Comment:     t.Comment,
 		StartedAt:   t.StartedAt,
 		FinishedAt:  t.FinishedAt,
