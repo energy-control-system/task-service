@@ -19,3 +19,10 @@ type Task struct {
 	CreatedAt   time.Time  `db:"created_at"`
 	UpdatedAt   time.Time  `db:"updated_at"`
 }
+
+type AddRequest struct {
+	BrigadeID   *int       `db:"brigade_id"`
+	ObjectID    int        `db:"object_id"`
+	PlanVisitAt *time.Time `db:"plan_visit_at"`
+	Comment     *string    `db:"comment"`
+}

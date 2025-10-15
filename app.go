@@ -78,7 +78,7 @@ func (a *App) InitDatabases(fs fs.FS, path string) (err error) {
 }
 
 func (a *App) InitServices() error {
-	taskRepository := dbtask.NewPostgres(a.postgres)
+	taskRepository := dbtask.NewRepository(a.postgres)
 
 	taskPublisher := task.NewPublisher(a.mainCtx, a.taskProducer)
 

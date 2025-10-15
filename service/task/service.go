@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"task-service/cluster/inspection"
-	"task-service/database/task"
 	"time"
 
 	"github.com/sunshineOfficial/golib/goctx"
@@ -16,63 +15,53 @@ import (
 const kafkaSubscribeTimeout = 2 * time.Minute
 
 type Service struct {
-	taskRepository *task.Postgres
-	taskPublisher  *Publisher
+	repository Repository
+	publisher  *Publisher
 }
 
-func NewService(taskRepository *task.Postgres, taskPublisher *Publisher) *Service {
+func NewService(repository Repository, publisher *Publisher) *Service {
 	return &Service{
-		taskRepository: taskRepository,
-		taskPublisher:  taskPublisher,
+		repository: repository,
+		publisher:  publisher,
 	}
 }
 
 func (s *Service) Add(ctx goctx.Context, log golog.Logger, request AddRequest) (Task, error) {
-	dbTask, err := s.taskRepository.Add(ctx, task.Task{
-		BrigadeID:   request.BrigadeID,
-		ObjectID:    request.ObjectID,
-		PlanVisitAt: request.PlanVisitAt,
-		Status:      int(StatusPlanned),
-		Comment:     request.Comment,
-	})
+	t, err := s.repository.Add(ctx, request)
 	if err != nil {
 		return Task{}, fmt.Errorf("add task to db: %w", err)
 	}
 
-	t := MapFromDB(dbTask)
-
-	go s.taskPublisher.Publish(ctx, log, EventTypeAdd, t)
+	go s.publisher.Publish(ctx, log, EventTypeAdd, t)
 
 	return t, nil
 }
 
 func (s *Service) GetByID(ctx goctx.Context, id int) (Task, error) {
-	dbTask, err := s.taskRepository.GetByID(ctx, id)
+	t, err := s.repository.GetByID(ctx, id)
 	if err != nil {
 		return Task{}, fmt.Errorf("get task %d from db: %w", id, err)
 	}
 
-	return MapFromDB(dbTask), nil
+	return t, nil
 }
 
 func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int) ([]Task, error) {
-	dbTasks, err := s.taskRepository.GetByBrigade(ctx, brigadeID)
+	tasks, err := s.repository.GetByBrigade(ctx, brigadeID)
 	if err != nil {
 		return nil, fmt.Errorf("get tasks by brigade id %d from db: %w", brigadeID, err)
 	}
 
-	return MapSliceFromDB(dbTasks), nil
+	return tasks, nil
 }
 
 func (s *Service) StartTask(ctx goctx.Context, log golog.Logger, id int) (Task, error) {
-	dbTask, err := s.taskRepository.StartTask(ctx, id)
+	t, err := s.repository.StartTask(ctx, id)
 	if err != nil {
 		return Task{}, fmt.Errorf("start task %d: %w", id, err)
 	}
 
-	t := MapFromDB(dbTask)
-
-	go s.taskPublisher.Publish(ctx, log, EventTypeStart, t)
+	go s.publisher.Publish(ctx, log, EventTypeStart, t)
 
 	return t, nil
 }
@@ -123,12 +112,12 @@ func (s *Service) handleFinishedInspection(ctx context.Context, log golog.Logger
 		return fmt.Errorf("invalid inspection status: %v", ins.Status)
 	}
 
-	dbTask, err := s.taskRepository.FinishTask(ctx, ins.TaskID)
+	t, err := s.repository.FinishTask(ctx, ins.TaskID)
 	if err != nil {
 		return fmt.Errorf("finish task %d: %w", ins.TaskID, err)
 	}
 
-	go s.taskPublisher.Publish(goctx.Wrap(ctx), log, EventTypeFinish, MapFromDB(dbTask))
+	go s.publisher.Publish(goctx.Wrap(ctx), log, EventTypeFinish, t)
 
 	return nil
 }
