@@ -1,0 +1,15 @@
+{
+  "port": 80,
+  "databases": {
+    "postgres": "postgres://postgres:%s@localhost:5432/task_service?sslmode=disable",
+    "kafka": {
+      "brokers": [
+        "localhost:9092"
+      ],
+      "topics": {
+        "tasks": "tasks-topic",
+        "inspections": "inspections-topic"
+      }
+    }
+  }
+}
