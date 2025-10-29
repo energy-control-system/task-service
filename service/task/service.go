@@ -55,6 +55,15 @@ func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int) ([]Task, error)
 	return tasks, nil
 }
 
+func (s *Service) GetAll(ctx goctx.Context) ([]Task, error) {
+	tasks, err := s.repository.GetAll(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get all tasks from db: %w", err)
+	}
+
+	return tasks, nil
+}
+
 func (s *Service) StartTask(ctx goctx.Context, log golog.Logger, id int) (Task, error) {
 	t, err := s.repository.StartTask(ctx, id)
 	if err != nil {

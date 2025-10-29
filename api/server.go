@@ -39,6 +39,7 @@ func (s *ServerBuilder) AddTasks(service *task.Service) {
 	r.HandlePost("", handler.AddTask(service))
 	r.HandleGet("/{id}", handler.GetTaskByID(service))
 	r.HandleGet("/brigade/{brigadeID}", handler.GetTasksByBrigade(service))
+	r.HandleGet("", handler.GetAllTasks(service))
 	r.HandlePatch("/{id}/start", handler.StartTask(service))
 }
 

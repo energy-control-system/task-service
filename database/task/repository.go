@@ -75,6 +75,19 @@ func (r *Repository) GetByBrigade(ctx context.Context, brigadeID int) ([]task.Ta
 	return MapSliceFromDB(tasks), nil
 }
 
+//go:embed sql/get_all.sql
+var getAllSQL string
+
+func (r *Repository) GetAll(ctx context.Context) ([]task.Task, error) {
+	var tasks []Task
+	err := r.db.SelectContext(ctx, &tasks, getAllSQL)
+	if err != nil {
+		return nil, fmt.Errorf("r.db.SelectContext: %w", err)
+	}
+
+	return MapSliceFromDB(tasks), nil
+}
+
 //go:embed sql/start_task.sql
 var startTaskSQL string
 

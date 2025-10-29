@@ -64,6 +64,17 @@ func GetTasksByBrigade(s *task.Service) gorouter.Handler {
 	}
 }
 
+func GetAllTasks(s *task.Service) gorouter.Handler {
+	return func(c gorouter.Context) error {
+		response, err := s.GetAll(c.Ctx())
+		if err != nil {
+			return fmt.Errorf("failed to get all tasks: %w", err)
+		}
+
+		return c.WriteJson(http.StatusOK, response)
+	}
+}
+
 func StartTask(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
 		var vars taskIDVars
