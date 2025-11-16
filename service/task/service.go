@@ -65,7 +65,16 @@ func (s *Service) GetAll(ctx goctx.Context) ([]Task, error) {
 }
 
 func (s *Service) StartTask(ctx goctx.Context, log golog.Logger, id int) (Task, error) {
-	t, err := s.repository.StartTask(ctx, id)
+	t, err := s.repository.GetByID(ctx, id)
+	if err != nil {
+		return Task{}, fmt.Errorf("get task %d from db: %w", id, err)
+	}
+
+	if t.Status != StatusPlanned {
+		return Task{}, fmt.Errorf("invalid task status: %v", t.Status)
+	}
+
+	t, err = s.repository.StartTask(ctx, id)
 	if err != nil {
 		return Task{}, fmt.Errorf("start task %d: %w", id, err)
 	}
