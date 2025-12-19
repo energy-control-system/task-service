@@ -30,3 +30,8 @@ type AddRequest struct {
 	PlanVisitAt *time.Time `json:"PlanVisitAt"`
 	Comment     *string    `json:"Comment"`
 }
+
+type AssignToBrigadeRequest struct {
+	TaskID    int `json:"TaskID"`
+	BrigadeID int `json:"BrigadeID"`
+}

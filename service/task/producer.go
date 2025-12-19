@@ -18,6 +18,7 @@ const (
 	EventTypeAdd
 	EventTypeStart
 	EventTypeFinish
+	EventTypeAssign
 )
 
 type Event struct {

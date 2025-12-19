@@ -84,6 +84,26 @@ func (s *Service) StartTask(ctx goctx.Context, log golog.Logger, id int) (Task, 
 	return t, nil
 }
 
+func (s *Service) AssignToBrigade(ctx goctx.Context, log golog.Logger, request AssignToBrigadeRequest) (Task, error) {
+	t, err := s.repository.GetByID(ctx, request.TaskID)
+	if err != nil {
+		return Task{}, fmt.Errorf("get task %d from db: %w", request.TaskID, err)
+	}
+
+	if t.Status != StatusPlanned {
+		return Task{}, fmt.Errorf("invalid task status: %v, expected planned", t.Status)
+	}
+
+	t, err = s.repository.AssignToBrigade(ctx, request.TaskID, request.BrigadeID)
+	if err != nil {
+		return Task{}, fmt.Errorf("assign task %d to brigade %d: %w", request.TaskID, request.BrigadeID, err)
+	}
+
+	go s.publisher.Publish(ctx, log, EventTypeAssign, t)
+
+	return t, nil
+}
+
 func (s *Service) SubscriberOnInspectionEvent(mainCtx context.Context, log golog.Logger) gokafka.Subscriber {
 	return func(message gokafka.Message, err error) {
 		ctx, cancel := context.WithTimeout(mainCtx, kafkaSubscribeTimeout)

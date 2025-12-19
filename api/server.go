@@ -41,6 +41,7 @@ func (s *ServerBuilder) AddTasks(service *task.Service) {
 	r.HandleGet("/brigade/{brigadeID}", handler.GetTasksByBrigade(service))
 	r.HandleGet("", handler.GetAllTasks(service))
 	r.HandlePatch("/{id}/start", handler.StartTask(service))
+	r.HandlePatch("/assign", handler.AssignTaskToBrigade(service))
 }
 
 func (s *ServerBuilder) Build() goserver.Server {

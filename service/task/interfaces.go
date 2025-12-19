@@ -9,4 +9,5 @@ type Repository interface {
 	GetAll(ctx context.Context) ([]Task, error)
 	StartTask(ctx context.Context, id int) (Task, error)
 	FinishTask(ctx context.Context, id int) (Task, error)
+	AssignToBrigade(ctx context.Context, taskID, brigadeID int) (Task, error)
 }

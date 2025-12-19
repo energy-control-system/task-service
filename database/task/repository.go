@@ -113,3 +113,16 @@ func (r *Repository) FinishTask(ctx context.Context, id int) (task.Task, error) 
 
 	return MapFromDB(t), nil
 }
+
+//go:embed sql/assign_to_brigade.sql
+var assignToBrigadeSQL string
+
+func (r *Repository) AssignToBrigade(ctx context.Context, taskID, brigadeID int) (task.Task, error) {
+	var t Task
+	err := r.db.GetContext(ctx, &t, assignToBrigadeSQL, brigadeID, taskID)
+	if err != nil {
+		return task.Task{}, fmt.Errorf("r.db.GetContext: %w", err)
+	}
+
+	return MapFromDB(t), nil
+}

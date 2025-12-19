@@ -90,3 +90,19 @@ func StartTask(s *task.Service) gorouter.Handler {
 		return c.WriteJson(http.StatusOK, t)
 	}
 }
+
+func AssignTaskToBrigade(s *task.Service) gorouter.Handler {
+	return func(c gorouter.Context) error {
+		var request task.AssignToBrigadeRequest
+		if err := c.ReadJson(&request); err != nil {
+			return fmt.Errorf("failed to read request: %w", err)
+		}
+
+		t, err := s.AssignToBrigade(c.Ctx(), c.Log().WithTags("assignTaskToBrigade"), request)
+		if err != nil {
+			return fmt.Errorf("failed to assign task to brigade: %w", err)
+		}
+
+		return c.WriteJson(http.StatusOK, t)
+	}
+}
