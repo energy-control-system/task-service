@@ -8,6 +8,17 @@ import (
 	"github.com/sunshineOfficial/golib/gohttp/gorouter"
 )
 
+// AddTask godoc
+// @Summary Create task
+// @Description Creates an inspection task for a metering object.
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param request body task.AddRequest true "Task creation payload"
+// @Success 200 {object} task.Task
+// @Failure 400 {object} gorouter.ErrorResponse
+// @Failure 500 {object} gorouter.ErrorResponse
+// @Router /tasks [post]
 func AddTask(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
 		var request task.AddRequest
@@ -28,6 +39,17 @@ type taskIDVars struct {
 	ID int `path:"id"`
 }
 
+// GetTaskByID godoc
+// @Summary Get task by ID
+// @Description Returns an inspection task by identifier.
+// @Tags tasks
+// @Produce json
+// @Param id path int true "Task ID"
+// @Success 200 {object} task.Task
+// @Failure 400 {object} gorouter.ErrorResponse
+// @Failure 404 {object} gorouter.ErrorResponse
+// @Failure 500 {object} gorouter.ErrorResponse
+// @Router /tasks/{id} [get]
 func GetTaskByID(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
 		var vars taskIDVars
@@ -48,6 +70,16 @@ type brigadeIDVars struct {
 	BrigadeID int `path:"brigadeID"`
 }
 
+// GetTasksByBrigade godoc
+// @Summary List tasks by brigade
+// @Description Returns tasks assigned to a brigade.
+// @Tags tasks
+// @Produce json
+// @Param brigadeID path int true "Brigade ID"
+// @Success 200 {array} task.Task
+// @Failure 400 {object} gorouter.ErrorResponse
+// @Failure 500 {object} gorouter.ErrorResponse
+// @Router /tasks/brigade/{brigadeID} [get]
 func GetTasksByBrigade(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
 		var vars brigadeIDVars
@@ -64,6 +96,14 @@ func GetTasksByBrigade(s *task.Service) gorouter.Handler {
 	}
 }
 
+// GetAllTasks godoc
+// @Summary List tasks
+// @Description Returns all inspection tasks.
+// @Tags tasks
+// @Produce json
+// @Success 200 {array} task.Task
+// @Failure 500 {object} gorouter.ErrorResponse
+// @Router /tasks [get]
 func GetAllTasks(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
 		response, err := s.GetAll(c.Ctx())
@@ -75,6 +115,17 @@ func GetAllTasks(s *task.Service) gorouter.Handler {
 	}
 }
 
+// StartTask godoc
+// @Summary Start task
+// @Description Marks a planned task as started.
+// @Tags tasks
+// @Produce json
+// @Param id path int true "Task ID"
+// @Success 200 {object} task.Task
+// @Failure 400 {object} gorouter.ErrorResponse
+// @Failure 404 {object} gorouter.ErrorResponse
+// @Failure 500 {object} gorouter.ErrorResponse
+// @Router /tasks/{id}/start [patch]
 func StartTask(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
 		var vars taskIDVars
@@ -91,6 +142,18 @@ func StartTask(s *task.Service) gorouter.Handler {
 	}
 }
 
+// AssignTaskToBrigade godoc
+// @Summary Assign task to brigade
+// @Description Assigns an inspection task to an inspector brigade.
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param request body task.AssignToBrigadeRequest true "Assignment payload"
+// @Success 200 {object} task.Task
+// @Failure 400 {object} gorouter.ErrorResponse
+// @Failure 404 {object} gorouter.ErrorResponse
+// @Failure 500 {object} gorouter.ErrorResponse
+// @Router /tasks/assign [patch]
 func AssignTaskToBrigade(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
 		var request task.AssignToBrigadeRequest

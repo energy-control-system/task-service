@@ -8,8 +8,14 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/sunshineOfficial/golib/golog"
 	"github.com/sunshineOfficial/golib/goos"
+
+	_ "task-service/docs"
 )
 
+// @title Task Service API
+// @version 1.0
+// @description API for managing inspection tasks and brigade assignments.
+// @BasePath /api/task-service
 func main() {
 	configureDecimal()
 
