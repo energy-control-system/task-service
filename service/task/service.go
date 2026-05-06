@@ -10,6 +10,7 @@ import (
 	"github.com/sunshineOfficial/golib/goctx"
 	"github.com/sunshineOfficial/golib/gokafka"
 	"github.com/sunshineOfficial/golib/golog"
+	"github.com/sunshineOfficial/golib/pagination"
 )
 
 const kafkaSubscribeTimeout = 2 * time.Minute
@@ -46,8 +47,12 @@ func (s *Service) GetByID(ctx goctx.Context, id int) (Task, error) {
 	return t, nil
 }
 
-func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int) ([]Task, error) {
-	tasks, err := s.repository.GetByBrigade(ctx, brigadeID)
+func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int, page pagination.Pagination) ([]Task, error) {
+	if err := page.Validate(); err != nil {
+		return nil, fmt.Errorf("validate pagination: %w", err)
+	}
+
+	tasks, err := s.repository.GetByBrigade(ctx, brigadeID, page)
 	if err != nil {
 		return nil, fmt.Errorf("get tasks by brigade id %d from db: %w", brigadeID, err)
 	}
@@ -55,8 +60,12 @@ func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int) ([]Task, error)
 	return tasks, nil
 }
 
-func (s *Service) GetAll(ctx goctx.Context) ([]Task, error) {
-	tasks, err := s.repository.GetAll(ctx)
+func (s *Service) GetAll(ctx goctx.Context, page pagination.Pagination) ([]Task, error) {
+	if err := page.Validate(); err != nil {
+		return nil, fmt.Errorf("validate pagination: %w", err)
+	}
+
+	tasks, err := s.repository.GetAll(ctx, page)
 	if err != nil {
 		return nil, fmt.Errorf("get all tasks from db: %w", err)
 	}

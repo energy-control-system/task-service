@@ -8,4 +8,6 @@ select id,
        finished_at,
        created_at,
        updated_at
-from tasks;
+from tasks
+order by id
+limit $1 offset $2;

@@ -6,6 +6,7 @@ import (
 	"task-service/service/task"
 
 	"github.com/sunshineOfficial/golib/gohttp/gorouter"
+	"github.com/sunshineOfficial/golib/pagination"
 )
 
 // AddTask godoc
@@ -76,6 +77,8 @@ type brigadeIDVars struct {
 // @Tags tasks
 // @Produce json
 // @Param brigadeID path int true "Brigade ID"
+// @Param limit query int false "Maximum number of items to return; 0 means no limit"
+// @Param offset query int false "Number of items to skip"
 // @Success 200 {array} task.Task
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
@@ -87,7 +90,12 @@ func GetTasksByBrigade(s *task.Service) gorouter.Handler {
 			return fmt.Errorf("failed to read brigade id: %w", err)
 		}
 
-		response, err := s.GetByBrigade(c.Ctx(), vars.BrigadeID)
+		var pageVars pagination.Pagination
+		if err := c.Vars(&pageVars); err != nil {
+			return fmt.Errorf("failed to read pagination: %w", err)
+		}
+
+		response, err := s.GetByBrigade(c.Ctx(), vars.BrigadeID, pageVars)
 		if err != nil {
 			return fmt.Errorf("failed to get tasks by brigade id: %w", err)
 		}
@@ -101,12 +109,20 @@ func GetTasksByBrigade(s *task.Service) gorouter.Handler {
 // @Description Returns all inspection tasks.
 // @Tags tasks
 // @Produce json
+// @Param limit query int false "Maximum number of items to return; 0 means no limit"
+// @Param offset query int false "Number of items to skip"
 // @Success 200 {array} task.Task
+// @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
 // @Router /tasks [get]
 func GetAllTasks(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
-		response, err := s.GetAll(c.Ctx())
+		var vars pagination.Pagination
+		if err := c.Vars(&vars); err != nil {
+			return fmt.Errorf("failed to read pagination: %w", err)
+		}
+
+		response, err := s.GetAll(c.Ctx(), vars)
 		if err != nil {
 			return fmt.Errorf("failed to get all tasks: %w", err)
 		}

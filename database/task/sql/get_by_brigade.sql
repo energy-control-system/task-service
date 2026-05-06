@@ -9,4 +9,6 @@ select id,
        created_at,
        updated_at
 from tasks
-where brigade_id = $1;
+where brigade_id = $1
+order by id
+limit $2 offset $3;

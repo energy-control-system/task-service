@@ -8,6 +8,7 @@ import (
 	"task-service/service/task"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sunshineOfficial/golib/pagination"
 )
 
 type Repository struct {
@@ -65,9 +66,9 @@ func (r *Repository) GetByID(ctx context.Context, id int) (task.Task, error) {
 //go:embed sql/get_by_brigade.sql
 var getByBrigadeSQL string
 
-func (r *Repository) GetByBrigade(ctx context.Context, brigadeID int) ([]task.Task, error) {
+func (r *Repository) GetByBrigade(ctx context.Context, brigadeID int, page pagination.Pagination) ([]task.Task, error) {
 	var tasks []Task
-	err := r.db.SelectContext(ctx, &tasks, getByBrigadeSQL, brigadeID)
+	err := r.db.SelectContext(ctx, &tasks, getByBrigadeSQL, brigadeID, page.LimitArg(), page.Offset)
 	if err != nil {
 		return nil, fmt.Errorf("r.db.SelectContext: %w", err)
 	}
@@ -78,9 +79,9 @@ func (r *Repository) GetByBrigade(ctx context.Context, brigadeID int) ([]task.Ta
 //go:embed sql/get_all.sql
 var getAllSQL string
 
-func (r *Repository) GetAll(ctx context.Context) ([]task.Task, error) {
+func (r *Repository) GetAll(ctx context.Context, page pagination.Pagination) ([]task.Task, error) {
 	var tasks []Task
-	err := r.db.SelectContext(ctx, &tasks, getAllSQL)
+	err := r.db.SelectContext(ctx, &tasks, getAllSQL, page.LimitArg(), page.Offset)
 	if err != nil {
 		return nil, fmt.Errorf("r.db.SelectContext: %w", err)
 	}
