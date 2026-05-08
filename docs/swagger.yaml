@@ -1,75 +1,78 @@
-basePath: /api/task-service
-definitions:
-  gorouter.ErrorInfo:
-    properties:
-      code:
-        type: string
-      message:
-        type: string
-    type: object
-  gorouter.ErrorResponse:
-    properties:
-      error:
-        $ref: '#/definitions/gorouter.ErrorInfo'
-    type: object
-  task-service_service_task.AddRequest:
-    properties:
-      BrigadeID:
-        type: integer
-      Comment:
-        type: string
-      ObjectID:
-        type: integer
-      PlanVisitAt:
-        type: string
-    type: object
-  task-service_service_task.Status:
-    enum:
-    - 0
-    - 1
-    - 2
-    - 3
-    type: integer
-    x-enum-varnames:
-    - StatusUnknown
-    - StatusPlanned
-    - StatusInWork
-    - StatusDone
-  task-service_service_task.Task:
-    properties:
-      BrigadeID:
-        type: integer
-      Comment:
-        type: string
-      CreatedAt:
-        type: string
-      FinishedAt:
-        type: string
-      ID:
-        type: integer
-      ObjectID:
-        type: integer
-      PlanVisitAt:
-        type: string
-      StartedAt:
-        type: string
-      Status:
-        $ref: '#/definitions/task-service_service_task.Status'
-      UpdatedAt:
-        type: string
-    type: object
-  task.AssignToBrigadeRequest:
-    properties:
-      BrigadeID:
-        type: integer
-      TaskID:
-        type: integer
-    type: object
+components:
+  schemas:
+    gorouter.ErrorInfo:
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      type: object
+    gorouter.ErrorResponse:
+      properties:
+        error:
+          $ref: '#/components/schemas/gorouter.ErrorInfo'
+      type: object
+    task-service_service_task.AddRequest:
+      properties:
+        BrigadeID:
+          type: integer
+        Comment:
+          type: string
+        ObjectID:
+          type: integer
+        PlanVisitAt:
+          type: string
+      type: object
+    task-service_service_task.AssignToBrigadeRequest:
+      properties:
+        BrigadeID:
+          type: integer
+        TaskID:
+          type: integer
+      type: object
+    task-service_service_task.Status:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      type: integer
+      x-enum-varnames:
+      - StatusUnknown
+      - StatusPlanned
+      - StatusInWork
+      - StatusDone
+    task-service_service_task.Task:
+      properties:
+        BrigadeID:
+          type: integer
+        Comment:
+          type: string
+        CreatedAt:
+          type: string
+        FinishedAt:
+          type: string
+        ID:
+          type: integer
+        ObjectID:
+          type: integer
+        PlanVisitAt:
+          type: string
+        StartedAt:
+          type: string
+        Status:
+          $ref: '#/components/schemas/task-service_service_task.Status'
+        UpdatedAt:
+          type: string
+      type: object
+externalDocs:
+  description: ""
+  url: ""
 info:
-  contact: {}
   description: API for managing inspection tasks and brigade assignments.
   title: Task Service API
   version: "1.0"
+openapi: 3.1.0
 paths:
   /tasks:
     get:
@@ -78,57 +81,69 @@ paths:
       - description: Maximum number of items to return; 0 means no limit
         in: query
         name: limit
-        type: integer
+        schema:
+          type: integer
       - description: Number of items to skip
         in: query
         name: offset
-        type: integer
-      produces:
-      - application/json
+        schema:
+          type: integer
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/task-service_service_task.Task'
+                type: array
           description: OK
-          schema:
-            items:
-              $ref: '#/definitions/task-service_service_task.Task'
-            type: array
         "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Bad Request
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
         "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
       summary: List tasks
       tags:
       - tasks
     post:
-      consumes:
-      - application/json
       description: Creates an inspection task for a metering object.
-      parameters:
-      - description: Task creation payload
-        in: body
-        name: request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/task-service_service_task.AddRequest'
+                description: Task creation payload
+                summary: request
+        description: Task creation payload
         required: true
-        schema:
-          $ref: '#/definitions/task-service_service_task.AddRequest'
-      produces:
-      - application/json
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task-service_service_task.Task'
           description: OK
-          schema:
-            $ref: '#/definitions/task-service_service_task.Task'
         "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Bad Request
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
         "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
       summary: Create task
       tags:
       - tasks
@@ -140,26 +155,33 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
-      produces:
-      - application/json
+        schema:
+          type: integer
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task-service_service_task.Task'
           description: OK
-          schema:
-            $ref: '#/definitions/task-service_service_task.Task'
         "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Bad Request
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
         "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Not Found
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
         "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
       summary: Get task by ID
       tags:
       - tasks
@@ -171,60 +193,75 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
-      produces:
-      - application/json
+        schema:
+          type: integer
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task-service_service_task.Task'
           description: OK
-          schema:
-            $ref: '#/definitions/task-service_service_task.Task'
         "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Bad Request
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
         "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Not Found
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
         "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
       summary: Start task
       tags:
       - tasks
   /tasks/assign:
     patch:
-      consumes:
-      - application/json
       description: Assigns an inspection task to an inspector brigade.
-      parameters:
-      - description: Assignment payload
-        in: body
-        name: request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+              - $ref: '#/components/schemas/task-service_service_task.AssignToBrigadeRequest'
+                description: Assignment payload
+                summary: request
+        description: Assignment payload
         required: true
-        schema:
-          $ref: '#/definitions/task.AssignToBrigadeRequest'
-      produces:
-      - application/json
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task-service_service_task.Task'
           description: OK
-          schema:
-            $ref: '#/definitions/task-service_service_task.Task'
         "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Bad Request
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
         "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Not Found
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
         "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
       summary: Assign task to brigade
       tags:
       - tasks
@@ -236,33 +273,41 @@ paths:
         in: path
         name: brigadeID
         required: true
-        type: integer
+        schema:
+          type: integer
       - description: Maximum number of items to return; 0 means no limit
         in: query
         name: limit
-        type: integer
+        schema:
+          type: integer
       - description: Number of items to skip
         in: query
         name: offset
-        type: integer
-      produces:
-      - application/json
+        schema:
+          type: integer
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/task-service_service_task.Task'
+                type: array
           description: OK
-          schema:
-            items:
-              $ref: '#/definitions/task-service_service_task.Task'
-            type: array
         "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Bad Request
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
         "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-          schema:
-            $ref: '#/definitions/gorouter.ErrorResponse'
       summary: List tasks by brigade
       tags:
       - tasks
-swagger: "2.0"
+servers:
+- url: /api/task-service
