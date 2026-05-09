@@ -27,6 +27,186 @@ const docTemplate = `{
                 },
                 "type": "object"
             },
+            "subscriber.Device": {
+                "properties": {
+                    "CreatedAt": {
+                        "type": "string"
+                    },
+                    "ID": {
+                        "type": "integer"
+                    },
+                    "Number": {
+                        "type": "string"
+                    },
+                    "ObjectID": {
+                        "type": "integer"
+                    },
+                    "PlaceDescription": {
+                        "type": "string"
+                    },
+                    "PlaceType": {
+                        "$ref": "#/components/schemas/subscriber.DevicePlaceType"
+                    },
+                    "Seals": {
+                        "items": {
+                            "$ref": "#/components/schemas/subscriber.Seal"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                    },
+                    "Type": {
+                        "type": "string"
+                    },
+                    "UpdatedAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "subscriber.DevicePlaceType": {
+                "enum": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "type": "integer",
+                "x-enum-varnames": [
+                    "DevicePlaceUnknown",
+                    "DevicePlaceOther",
+                    "DevicePlaceFlat",
+                    "DevicePlaceStairLanding"
+                ]
+            },
+            "subscriber.Object": {
+                "properties": {
+                    "Address": {
+                        "type": "string"
+                    },
+                    "CreatedAt": {
+                        "type": "string"
+                    },
+                    "Devices": {
+                        "items": {
+                            "$ref": "#/components/schemas/subscriber.Device"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                    },
+                    "HaveAutomaton": {
+                        "type": "boolean"
+                    },
+                    "ID": {
+                        "type": "integer"
+                    },
+                    "UpdatedAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "subscriber.Passport": {
+                "properties": {
+                    "ID": {
+                        "type": "integer"
+                    },
+                    "IssueDate": {
+                        "type": "string"
+                    },
+                    "IssuedBy": {
+                        "type": "string"
+                    },
+                    "Number": {
+                        "type": "string"
+                    },
+                    "Series": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "subscriber.Seal": {
+                "properties": {
+                    "CreatedAt": {
+                        "type": "string"
+                    },
+                    "DeviceID": {
+                        "type": "integer"
+                    },
+                    "ID": {
+                        "type": "integer"
+                    },
+                    "Number": {
+                        "type": "string"
+                    },
+                    "Place": {
+                        "type": "string"
+                    },
+                    "UpdatedAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "subscriber.Status": {
+                "enum": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "type": "integer",
+                "x-enum-varnames": [
+                    "StatusUnknown",
+                    "StatusActive",
+                    "StatusViolator",
+                    "StatusArchived"
+                ]
+            },
+            "subscriber.Subscriber": {
+                "properties": {
+                    "AccountNumber": {
+                        "type": "string"
+                    },
+                    "BirthDate": {
+                        "type": "string"
+                    },
+                    "CreatedAt": {
+                        "type": "string"
+                    },
+                    "Email": {
+                        "type": "string"
+                    },
+                    "ID": {
+                        "type": "integer"
+                    },
+                    "INN": {
+                        "type": "string"
+                    },
+                    "Name": {
+                        "type": "string"
+                    },
+                    "Passport": {
+                        "$ref": "#/components/schemas/subscriber.Passport"
+                    },
+                    "Patronymic": {
+                        "type": "string"
+                    },
+                    "PhoneNumber": {
+                        "type": "string"
+                    },
+                    "Status": {
+                        "$ref": "#/components/schemas/subscriber.Status"
+                    },
+                    "Surname": {
+                        "type": "string"
+                    },
+                    "UpdatedAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "task-service_service_task.AddRequest": {
                 "properties": {
                     "BrigadeID": {
@@ -40,17 +220,6 @@ const docTemplate = `{
                     },
                     "PlanVisitAt": {
                         "type": "string"
-                    }
-                },
-                "type": "object"
-            },
-            "task-service_service_task.AssignToBrigadeRequest": {
-                "properties": {
-                    "BrigadeID": {
-                        "type": "integer"
-                    },
-                    "TaskID": {
-                        "type": "integer"
                     }
                 },
                 "type": "object"
@@ -101,6 +270,54 @@ const docTemplate = `{
                     },
                     "UpdatedAt": {
                         "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "task.AssignToBrigadeRequest": {
+                "properties": {
+                    "BrigadeID": {
+                        "type": "integer"
+                    },
+                    "TaskID": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "task.Contract": {
+                "properties": {
+                    "CreatedAt": {
+                        "type": "string"
+                    },
+                    "ID": {
+                        "type": "integer"
+                    },
+                    "Number": {
+                        "type": "string"
+                    },
+                    "Object": {
+                        "$ref": "#/components/schemas/subscriber.Object"
+                    },
+                    "SignDate": {
+                        "type": "string"
+                    },
+                    "Subscriber": {
+                        "$ref": "#/components/schemas/subscriber.Subscriber"
+                    },
+                    "UpdatedAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "task.TaskExtended": {
+                "properties": {
+                    "Contract": {
+                        "$ref": "#/components/schemas/task.Contract"
+                    },
+                    "Task": {
+                        "$ref": "#/components/schemas/task-service_service_task.Task"
                     }
                 },
                 "type": "object"
@@ -250,7 +467,7 @@ const docTemplate = `{
                                         "type": "object"
                                     },
                                     {
-                                        "$ref": "#/components/schemas/task-service_service_task.AssignToBrigadeRequest",
+                                        "$ref": "#/components/schemas/task.AssignToBrigadeRequest",
                                         "summary": "request",
                                         "description": "Assignment payload"
                                     }
@@ -380,6 +597,77 @@ const docTemplate = `{
                 ]
             }
         },
+        "/tasks/brigade/{brigadeID}/extended": {
+            "get": {
+                "description": "Returns tasks assigned to a brigade with latest contract information for each task object.",
+                "parameters": [
+                    {
+                        "description": "Brigade ID",
+                        "in": "path",
+                        "name": "brigadeID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Maximum number of items to return; 0 means no limit",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Number of items to skip",
+                        "in": "query",
+                        "name": "offset",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "items": {
+                                        "$ref": "#/components/schemas/task.TaskExtended"
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/gorouter.ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/gorouter.ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "List tasks by brigade with contract data",
+                "tags": [
+                    "tasks"
+                ]
+            }
+        },
         "/tasks/{id}": {
             "get": {
                 "description": "Returns an inspection task by identifier.",
@@ -437,6 +725,68 @@ const docTemplate = `{
                     }
                 },
                 "summary": "Get task by ID",
+                "tags": [
+                    "tasks"
+                ]
+            }
+        },
+        "/tasks/{id}/extended": {
+            "get": {
+                "description": "Returns an inspection task with latest contract information for its object.",
+                "parameters": [
+                    {
+                        "description": "Task ID",
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/task.TaskExtended"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/gorouter.ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/gorouter.ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/gorouter.ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "Get task by ID with contract data",
                 "tags": [
                     "tasks"
                 ]

@@ -3,6 +3,7 @@ package task
 import (
 	"context"
 
+	"github.com/sunshineOfficial/golib/goctx"
 	"github.com/sunshineOfficial/golib/pagination"
 )
 
@@ -14,4 +15,8 @@ type Repository interface {
 	StartTask(ctx context.Context, id int) (Task, error)
 	FinishTask(ctx context.Context, id int) (Task, error)
 	AssignToBrigade(ctx context.Context, taskID, brigadeID int) (Task, error)
+}
+
+type SubscriberService interface {
+	GetLastContractsByObjectIDs(ctx goctx.Context, objectIDs []int) ([]Contract, error)
 }

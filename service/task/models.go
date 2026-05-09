@@ -1,6 +1,9 @@
 package task
 
-import "time"
+import (
+	"task-service/cluster/subscriber"
+	"time"
+)
 
 type Status int
 
@@ -22,6 +25,14 @@ type Task struct {
 	FinishedAt  *time.Time `json:"FinishedAt,omitempty"`
 	CreatedAt   time.Time  `json:"CreatedAt"`
 	UpdatedAt   time.Time  `json:"UpdatedAt"`
+}
+
+type Contract = subscriber.Contract
+type Object = subscriber.Object
+
+type TaskExtended struct {
+	Task     Task     `json:"Task"`
+	Contract Contract `json:"Contract"`
 }
 
 type AddRequest struct {

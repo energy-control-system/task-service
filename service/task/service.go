@@ -16,14 +16,16 @@ import (
 const kafkaSubscribeTimeout = 2 * time.Minute
 
 type Service struct {
-	repository Repository
-	publisher  *Publisher
+	repository        Repository
+	publisher         *Publisher
+	subscriberService SubscriberService
 }
 
-func NewService(repository Repository, publisher *Publisher) *Service {
+func NewService(repository Repository, publisher *Publisher, subscriberService SubscriberService) *Service {
 	return &Service{
-		repository: repository,
-		publisher:  publisher,
+		repository:        repository,
+		publisher:         publisher,
+		subscriberService: subscriberService,
 	}
 }
 
@@ -47,6 +49,28 @@ func (s *Service) GetByID(ctx goctx.Context, id int) (Task, error) {
 	return t, nil
 }
 
+func (s *Service) GetByIDExtended(ctx goctx.Context, id int) (TaskExtended, error) {
+	t, err := s.GetByID(ctx, id)
+	if err != nil {
+		return TaskExtended{}, err
+	}
+
+	contracts, err := s.subscriberService.GetLastContractsByObjectIDs(ctx, []int{t.ObjectID})
+	if err != nil {
+		return TaskExtended{}, fmt.Errorf("get last contract by object id: %w", err)
+	}
+
+	contractsByObjectID := make(map[int]Contract, len(contracts))
+	for _, c := range contracts {
+		contractsByObjectID[c.Object.ID] = c
+	}
+
+	return TaskExtended{
+		Task:     t,
+		Contract: contractsByObjectID[t.ObjectID],
+	}, nil
+}
+
 func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int, page pagination.Pagination) ([]Task, error) {
 	if err := page.Validate(); err != nil {
 		return nil, fmt.Errorf("validate pagination: %w", err)
@@ -58,6 +82,41 @@ func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int, page pagination
 	}
 
 	return tasks, nil
+}
+
+func (s *Service) GetByBrigadeExtended(ctx goctx.Context, brigadeID int, page pagination.Pagination) ([]TaskExtended, error) {
+	tasks, err := s.GetByBrigade(ctx, brigadeID, page)
+	if err != nil {
+		return nil, err
+	}
+	if len(tasks) == 0 {
+		return []TaskExtended{}, nil
+	}
+
+	objectIDs := make([]int, 0, len(tasks))
+	for _, t := range tasks {
+		objectIDs = append(objectIDs, t.ObjectID)
+	}
+
+	contracts, err := s.subscriberService.GetLastContractsByObjectIDs(ctx, objectIDs)
+	if err != nil {
+		return nil, fmt.Errorf("get last contracts by object ids: %w", err)
+	}
+
+	contractsByObjectID := make(map[int]Contract, len(contracts))
+	for _, c := range contracts {
+		contractsByObjectID[c.Object.ID] = c
+	}
+
+	result := make([]TaskExtended, 0, len(tasks))
+	for _, t := range tasks {
+		result = append(result, TaskExtended{
+			Task:     t,
+			Contract: contractsByObjectID[t.ObjectID],
+		})
+	}
+
+	return result, nil
 }
 
 func (s *Service) GetAll(ctx goctx.Context, page pagination.Pagination) ([]Task, error) {

@@ -11,5 +11,8 @@
         "inspections": "inspections-topic"
       }
     }
+  },
+  "cluster": {
+    "subscriberService": "http://subscriber-service"
   }
 }

@@ -37,7 +37,9 @@ func (s *ServerBuilder) AddDebug() {
 func (s *ServerBuilder) AddTasks(service *task.Service) {
 	r := s.router.SubRouter("/tasks")
 	r.HandlePost("", handler.AddTask(service))
+	r.HandleGet("/{id}/extended", handler.GetTaskByIDExtended(service))
 	r.HandleGet("/{id}", handler.GetTaskByID(service))
+	r.HandleGet("/brigade/{brigadeID}/extended", handler.GetTasksByBrigadeExtended(service))
 	r.HandleGet("/brigade/{brigadeID}", handler.GetTasksByBrigade(service))
 	r.HandleGet("", handler.GetAllTasks(service))
 	r.HandlePatch("/{id}/start", handler.StartTask(service))

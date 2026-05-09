@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"task-service/api"
+	"task-service/cluster/subscriber"
 	"task-service/config"
 	dbtask "task-service/database/task"
 	"task-service/service/task"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/sunshineOfficial/golib/db"
+	"github.com/sunshineOfficial/golib/gohttp"
 	"github.com/sunshineOfficial/golib/gohttp/goserver"
 	"github.com/sunshineOfficial/golib/gokafka"
 	"github.com/sunshineOfficial/golib/golog"
@@ -81,8 +83,10 @@ func (a *App) InitServices() error {
 	taskRepository := dbtask.NewRepository(a.postgres)
 
 	taskPublisher := task.NewPublisher(a.mainCtx, a.taskProducer)
+	httpClient := gohttp.NewClient(gohttp.WithTimeout(1 * time.Minute))
+	subscriberClient := subscriber.NewClient(httpClient, a.settings.Cluster.SubscriberService)
 
-	a.taskService = task.NewService(taskRepository, taskPublisher)
+	a.taskService = task.NewService(taskRepository, taskPublisher, subscriberClient)
 
 	return nil
 }
