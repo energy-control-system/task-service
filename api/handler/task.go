@@ -256,6 +256,33 @@ func UpdateTask(s *task.Service) gorouter.Handler {
 	}
 }
 
+// DeleteTask godoc
+// @Summary Delete task
+// @Description Deletes an inspection task by identifier.
+// @Tags tasks
+// @Produce json
+// @Param id path int true "Task ID"
+// @Success 200 {object} task.Task
+// @Failure 400 {object} gorouter.ErrorResponse
+// @Failure 404 {object} gorouter.ErrorResponse
+// @Failure 500 {object} gorouter.ErrorResponse
+// @Router /tasks/{id} [delete]
+func DeleteTask(s *task.Service) gorouter.Handler {
+	return func(c gorouter.Context) error {
+		var vars taskIDVars
+		if err := c.Vars(&vars); err != nil {
+			return fmt.Errorf("failed to read task id: %w", err)
+		}
+
+		t, err := s.Delete(c.Ctx(), c.Log().WithTags("deleteTask"), vars.ID)
+		if err != nil {
+			return fmt.Errorf("failed to delete task: %w", err)
+		}
+
+		return c.WriteJson(http.StatusOK, t)
+	}
+}
+
 // StartTask godoc
 // @Summary Start task
 // @Description Marks a planned task as started.

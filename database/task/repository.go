@@ -137,6 +137,19 @@ func (r *Repository) Update(ctx context.Context, id int, request task.UpdateRequ
 	return MapFromDB(t), err
 }
 
+//go:embed sql/delete.sql
+var deleteSQL string
+
+func (r *Repository) Delete(ctx context.Context, id int) (task.Task, error) {
+	var t Task
+	err := r.db.GetContext(ctx, &t, deleteSQL, id)
+	if err != nil {
+		return task.Task{}, fmt.Errorf("r.db.GetContext: %w", err)
+	}
+
+	return MapFromDB(t), nil
+}
+
 func statusArg(filter task.GetAllFilter) any {
 	if filter.Status == nil {
 		return nil

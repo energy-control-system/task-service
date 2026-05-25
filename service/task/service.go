@@ -143,6 +143,17 @@ func (s *Service) Update(ctx goctx.Context, log golog.Logger, id int, request Up
 	return t, nil
 }
 
+func (s *Service) Delete(ctx goctx.Context, log golog.Logger, id int) (Task, error) {
+	t, err := s.repository.Delete(ctx, id)
+	if err != nil {
+		return Task{}, fmt.Errorf("delete task %d: %w", id, err)
+	}
+
+	go s.publisher.Publish(ctx, log, EventTypeDelete, t)
+
+	return t, nil
+}
+
 func (s *Service) StartTask(ctx goctx.Context, log golog.Logger, id int) (Task, error) {
 	t, err := s.repository.GetByID(ctx, id)
 	if err != nil {

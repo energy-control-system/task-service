@@ -13,6 +13,7 @@ type Repository interface {
 	GetByBrigade(ctx context.Context, brigadeID int, page pagination.Pagination, filter GetAllFilter) ([]Task, error)
 	GetAll(ctx context.Context, page pagination.Pagination, filter GetAllFilter) ([]Task, error)
 	Update(ctx context.Context, id int, request UpdateRequest) (Task, error)
+	Delete(ctx context.Context, id int) (Task, error)
 	StartTask(ctx context.Context, id int) (Task, error)
 	FinishTask(ctx context.Context, id int) (Task, error)
 	AssignToBrigade(ctx context.Context, taskID, brigadeID int) (Task, error)

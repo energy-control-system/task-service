@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/sunshineOfficial/golib/goctx"
+	"github.com/sunshineOfficial/golib/gokafka"
 	"github.com/sunshineOfficial/golib/pagination"
 )
 
@@ -15,6 +16,7 @@ type mockRepository struct {
 	tasks            []Task
 	gotAllFilter     GetAllFilter
 	gotBrigadeFilter GetAllFilter
+	deletedID        int
 }
 
 func (m *mockRepository) Add(context.Context, AddRequest) (Task, error) {
@@ -39,6 +41,11 @@ func (m *mockRepository) Update(context.Context, int, UpdateRequest) (Task, erro
 	return Task{}, nil
 }
 
+func (m *mockRepository) Delete(_ context.Context, id int) (Task, error) {
+	m.deletedID = id
+	return Task{ID: id}, nil
+}
+
 func (m *mockRepository) StartTask(context.Context, int) (Task, error) {
 	return Task{}, nil
 }
@@ -59,6 +66,16 @@ type mockSubscriberService struct {
 func (m *mockSubscriberService) GetLastContractsByObjectIDs(_ goctx.Context, objectIDs []int) ([]Contract, error) {
 	m.gotObjectIDs = append([]int(nil), objectIDs...)
 	return m.contracts, nil
+}
+
+type fakeProducer struct{}
+
+func (fakeProducer) Produce(context.Context, gokafka.Message) error {
+	return nil
+}
+
+func (fakeProducer) Close(context.Context) error {
+	return nil
 }
 
 func TestGetByBrigadeExtendedGetsContractsInBatch(t *testing.T) {
@@ -108,6 +125,23 @@ func TestGetByIDExtendedGetsTaskContract(t *testing.T) {
 	}
 	if got.Task.ID != 1 || got.Contract.ID != 100 {
 		t.Fatalf("extended task = %+v, want task 1 with contract 100", got)
+	}
+}
+
+func TestDeleteDeletesTaskByID(t *testing.T) {
+	repository := &mockRepository{}
+	service := NewService(repository, NewPublisher(context.Background(), fakeProducer{}), nil)
+
+	got, err := service.Delete(goctx.Wrap(context.Background()), nil, 15)
+	if err != nil {
+		t.Fatalf("Delete returned error: %v", err)
+	}
+
+	if repository.deletedID != 15 {
+		t.Fatalf("repository deleted id = %d, want 15", repository.deletedID)
+	}
+	if got.ID != 15 {
+		t.Fatalf("deleted task id = %d, want 15", got.ID)
 	}
 }
 
