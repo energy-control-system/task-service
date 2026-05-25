@@ -35,6 +35,10 @@ func (m *mockRepository) GetAll(_ context.Context, _ pagination.Pagination, filt
 	return m.tasks, nil
 }
 
+func (m *mockRepository) Update(context.Context, int, UpdateRequest) (Task, error) {
+	return Task{}, nil
+}
+
 func (m *mockRepository) StartTask(context.Context, int) (Task, error) {
 	return Task{}, nil
 }

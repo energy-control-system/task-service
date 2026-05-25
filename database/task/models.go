@@ -26,3 +26,9 @@ type AddRequest struct {
 	PlanVisitAt *time.Time `db:"plan_visit_at"`
 	Comment     *string    `db:"comment"`
 }
+
+type UpdateRequest struct {
+	ID          int        `db:"id"`
+	PlanVisitAt *time.Time `db:"plan_visit_at"`
+	Comment     *string    `db:"comment"`
+}

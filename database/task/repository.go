@@ -108,6 +108,35 @@ func (r *Repository) GetAll(ctx context.Context, page pagination.Pagination, fil
 	return MapSliceFromDB(tasks), nil
 }
 
+//go:embed sql/update.sql
+var updateSQL string
+
+func (r *Repository) Update(ctx context.Context, id int, request task.UpdateRequest) (task.Task, error) {
+	rows, err := r.db.NamedQueryContext(ctx, updateSQL, MapUpdateRequestToDB(id, request))
+	if err != nil {
+		return task.Task{}, fmt.Errorf("r.db.NamedQueryContext: %w", err)
+	}
+	defer func() {
+		err = errors.Join(err, rows.Close())
+	}()
+
+	if !rows.Next() {
+		return task.Task{}, errors.New("rows.Next == false")
+	}
+
+	var t Task
+	err = rows.StructScan(&t)
+	if err != nil {
+		return task.Task{}, fmt.Errorf("rows.Scan: %w", err)
+	}
+
+	if err = rows.Err(); err != nil {
+		return task.Task{}, fmt.Errorf("rows.Err: %w", err)
+	}
+
+	return MapFromDB(t), err
+}
+
 func statusArg(filter task.GetAllFilter) any {
 	if filter.Status == nil {
 		return nil

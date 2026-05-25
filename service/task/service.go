@@ -132,6 +132,17 @@ func (s *Service) GetAll(ctx goctx.Context, page pagination.Pagination, filter G
 	return tasks, nil
 }
 
+func (s *Service) Update(ctx goctx.Context, log golog.Logger, id int, request UpdateRequest) (Task, error) {
+	t, err := s.repository.Update(ctx, id, request)
+	if err != nil {
+		return Task{}, fmt.Errorf("update task %d: %w", id, err)
+	}
+
+	go s.publisher.Publish(ctx, log, EventTypeUpdate, t)
+
+	return t, nil
+}
+
 func (s *Service) StartTask(ctx goctx.Context, log golog.Logger, id int) (Task, error) {
 	t, err := s.repository.GetByID(ctx, id)
 	if err != nil {

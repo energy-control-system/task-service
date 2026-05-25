@@ -274,6 +274,17 @@ const docTemplate = `{
                 },
                 "type": "object"
             },
+            "task-service_service_task.UpdateRequest": {
+                "properties": {
+                    "Comment": {
+                        "type": "string"
+                    },
+                    "PlanVisitAt": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "task.AssignToBrigadeRequest": {
                 "properties": {
                     "BrigadeID": {
@@ -789,6 +800,79 @@ const docTemplate = `{
                     }
                 },
                 "summary": "Get task by ID",
+                "tags": [
+                    "tasks"
+                ]
+            },
+            "patch": {
+                "description": "Updates task planned visit date and comment.",
+                "parameters": [
+                    {
+                        "description": "Task ID",
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/task-service_service_task.UpdateRequest",
+                                "summary": "request",
+                                "description": "Task update payload"
+                            }
+                        }
+                    },
+                    "description": "Task update payload",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/task-service_service_task.Task"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/gorouter.ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/gorouter.ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/gorouter.ErrorResponse"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "summary": "Update task",
                 "tags": [
                     "tasks"
                 ]

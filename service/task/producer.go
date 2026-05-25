@@ -19,6 +19,7 @@ const (
 	EventTypeStart
 	EventTypeFinish
 	EventTypeAssign
+	EventTypeUpdate
 )
 
 type Event struct {

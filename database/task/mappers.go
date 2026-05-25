@@ -34,3 +34,11 @@ func MapAddRequestToDB(r task.AddRequest) AddRequest {
 		Comment:     r.Comment,
 	}
 }
+
+func MapUpdateRequestToDB(id int, r task.UpdateRequest) UpdateRequest {
+	return UpdateRequest{
+		ID:          id,
+		PlanVisitAt: r.PlanVisitAt,
+		Comment:     r.Comment,
+	}
+}

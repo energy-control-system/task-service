@@ -215,6 +215,39 @@ func GetAllTasks(s *task.Service) gorouter.Handler {
 	}
 }
 
+// UpdateTask godoc
+// @Summary Update task
+// @Description Updates task planned visit date and comment.
+// @Tags tasks
+// @Produce json
+// @Param id path int true "Task ID"
+// @Param request body task.UpdateRequest true "Task update payload"
+// @Success 200 {object} task.Task
+// @Failure 400 {object} gorouter.ErrorResponse
+// @Failure 404 {object} gorouter.ErrorResponse
+// @Failure 500 {object} gorouter.ErrorResponse
+// @Router /tasks/{id} [patch]
+func UpdateTask(s *task.Service) gorouter.Handler {
+	return func(c gorouter.Context) error {
+		var vars taskIDVars
+		if err := c.Vars(&vars); err != nil {
+			return fmt.Errorf("failed to read task id: %w", err)
+		}
+
+		var request task.UpdateRequest
+		if err := c.ReadJson(&request); err != nil {
+			return fmt.Errorf("failed to read request: %w", err)
+		}
+
+		t, err := s.Update(c.Ctx(), c.Log().WithTags("updateTask"), vars.ID, request)
+		if err != nil {
+			return fmt.Errorf("failed to update task: %w", err)
+		}
+
+		return c.WriteJson(http.StatusOK, t)
+	}
+}
+
 // StartTask godoc
 // @Summary Start task
 // @Description Marks a planned task as started.
