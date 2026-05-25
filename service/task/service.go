@@ -71,12 +71,12 @@ func (s *Service) GetByIDExtended(ctx goctx.Context, id int) (TaskExtended, erro
 	}, nil
 }
 
-func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int, page pagination.Pagination) ([]Task, error) {
+func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int, page pagination.Pagination, filter GetAllFilter) ([]Task, error) {
 	if err := page.Validate(); err != nil {
 		return nil, fmt.Errorf("validate pagination: %w", err)
 	}
 
-	tasks, err := s.repository.GetByBrigade(ctx, brigadeID, page)
+	tasks, err := s.repository.GetByBrigade(ctx, brigadeID, page, filter)
 	if err != nil {
 		return nil, fmt.Errorf("get tasks by brigade id %d from db: %w", brigadeID, err)
 	}
@@ -84,8 +84,8 @@ func (s *Service) GetByBrigade(ctx goctx.Context, brigadeID int, page pagination
 	return tasks, nil
 }
 
-func (s *Service) GetByBrigadeExtended(ctx goctx.Context, brigadeID int, page pagination.Pagination) ([]TaskExtended, error) {
-	tasks, err := s.GetByBrigade(ctx, brigadeID, page)
+func (s *Service) GetByBrigadeExtended(ctx goctx.Context, brigadeID int, page pagination.Pagination, filter GetAllFilter) ([]TaskExtended, error) {
+	tasks, err := s.GetByBrigade(ctx, brigadeID, page, filter)
 	if err != nil {
 		return nil, err
 	}

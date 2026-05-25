@@ -66,9 +66,19 @@ func (r *Repository) GetByID(ctx context.Context, id int) (task.Task, error) {
 //go:embed sql/get_by_brigade.sql
 var getByBrigadeSQL string
 
-func (r *Repository) GetByBrigade(ctx context.Context, brigadeID int, page pagination.Pagination) ([]task.Task, error) {
+func (r *Repository) GetByBrigade(ctx context.Context, brigadeID int, page pagination.Pagination, filter task.GetAllFilter) ([]task.Task, error) {
 	var tasks []Task
-	err := r.db.SelectContext(ctx, &tasks, getByBrigadeSQL, brigadeID, page.LimitArg(), page.Offset)
+	err := r.db.SelectContext(
+		ctx,
+		&tasks,
+		getByBrigadeSQL,
+		brigadeID,
+		statusArg(filter),
+		filter.DateFrom,
+		filter.DateTo,
+		page.LimitArg(),
+		page.Offset,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("r.db.SelectContext: %w", err)
 	}

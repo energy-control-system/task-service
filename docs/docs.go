@@ -566,6 +566,32 @@ const docTemplate = `{
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "description": "Task status filter",
+                        "in": "query",
+                        "name": "status",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Plan visit date lower bound",
+                        "in": "query",
+                        "name": "dateFrom",
+                        "schema": {
+                            "format": "date-time",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Plan visit date upper bound",
+                        "in": "query",
+                        "name": "dateTo",
+                        "schema": {
+                            "format": "date-time",
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -636,6 +662,32 @@ const docTemplate = `{
                         "name": "offset",
                         "schema": {
                             "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Task status filter",
+                        "in": "query",
+                        "name": "status",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Plan visit date lower bound",
+                        "in": "query",
+                        "name": "dateFrom",
+                        "schema": {
+                            "format": "date-time",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Plan visit date upper bound",
+                        "in": "query",
+                        "name": "dateTo",
+                        "schema": {
+                            "format": "date-time",
+                            "type": "string"
                         }
                     }
                 ],

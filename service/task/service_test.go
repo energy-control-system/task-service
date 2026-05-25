@@ -11,9 +11,10 @@ import (
 )
 
 type mockRepository struct {
-	task         Task
-	tasks        []Task
-	gotAllFilter GetAllFilter
+	task             Task
+	tasks            []Task
+	gotAllFilter     GetAllFilter
+	gotBrigadeFilter GetAllFilter
 }
 
 func (m *mockRepository) Add(context.Context, AddRequest) (Task, error) {
@@ -24,7 +25,8 @@ func (m *mockRepository) GetByID(context.Context, int) (Task, error) {
 	return m.task, nil
 }
 
-func (m *mockRepository) GetByBrigade(context.Context, int, pagination.Pagination) ([]Task, error) {
+func (m *mockRepository) GetByBrigade(_ context.Context, _ int, _ pagination.Pagination, filter GetAllFilter) ([]Task, error) {
+	m.gotBrigadeFilter = filter
 	return m.tasks, nil
 }
 
@@ -66,7 +68,7 @@ func TestGetByBrigadeExtendedGetsContractsInBatch(t *testing.T) {
 	}}
 	service := NewService(repository, nil, subscriberService)
 
-	got, err := service.GetByBrigadeExtended(goctx.Wrap(context.Background()), 7, pagination.Pagination{})
+	got, err := service.GetByBrigadeExtended(goctx.Wrap(context.Background()), 7, pagination.Pagination{}, GetAllFilter{})
 	if err != nil {
 		t.Fatalf("GetByBrigadeExtended returned error: %v", err)
 	}
@@ -102,6 +104,38 @@ func TestGetByIDExtendedGetsTaskContract(t *testing.T) {
 	}
 	if got.Task.ID != 1 || got.Contract.ID != 100 {
 		t.Fatalf("extended task = %+v, want task 1 with contract 100", got)
+	}
+}
+
+func TestGetByBrigadePassesFiltersToRepository(t *testing.T) {
+	repository := &mockRepository{tasks: []Task{
+		{ID: 1, Status: StatusDone},
+	}}
+	service := NewService(repository, nil, nil)
+	status := StatusDone
+	dateFrom := time.Date(2026, time.May, 1, 0, 0, 0, 0, time.UTC)
+	dateTo := time.Date(2026, time.May, 31, 23, 59, 59, 0, time.UTC)
+
+	got, err := service.GetByBrigade(goctx.Wrap(context.Background()), 7, pagination.Pagination{}, GetAllFilter{
+		Status:   &status,
+		DateFrom: &dateFrom,
+		DateTo:   &dateTo,
+	})
+	if err != nil {
+		t.Fatalf("GetByBrigade returned error: %v", err)
+	}
+
+	if len(got) != 1 || got[0].Status != StatusDone {
+		t.Fatalf("tasks = %+v, want one done task", got)
+	}
+	if repository.gotBrigadeFilter.Status == nil || *repository.gotBrigadeFilter.Status != StatusDone {
+		t.Fatalf("repository status filter = %v, want %v", repository.gotBrigadeFilter.Status, StatusDone)
+	}
+	if repository.gotBrigadeFilter.DateFrom == nil || !repository.gotBrigadeFilter.DateFrom.Equal(dateFrom) {
+		t.Fatalf("repository dateFrom filter = %v, want %v", repository.gotBrigadeFilter.DateFrom, dateFrom)
+	}
+	if repository.gotBrigadeFilter.DateTo == nil || !repository.gotBrigadeFilter.DateTo.Equal(dateTo) {
+		t.Fatalf("repository dateTo filter = %v, want %v", repository.gotBrigadeFilter.DateTo, dateTo)
 	}
 }
 

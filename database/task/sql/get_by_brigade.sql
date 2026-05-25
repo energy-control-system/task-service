@@ -10,5 +10,8 @@ select id,
        updated_at
 from tasks
 where brigade_id = $1
+  and ($2::integer is null or status = $2)
+  and ($3::timestamptz is null or plan_visit_at >= $3)
+  and ($4::timestamptz is null or plan_visit_at <= $4)
 order by id
-limit $2 offset $3;
+limit $5 offset $6;
