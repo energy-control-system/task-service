@@ -99,10 +99,18 @@ type brigadeIDVars struct {
 }
 
 type taskListQueryVars struct {
-	pagination.Pagination
+	Limit    int          `query:"limit"`
+	Offset   int          `query:"offset"`
 	Status   *task.Status `query:"status"`
 	DateFrom *time.Time   `query:"dateFrom"`
 	DateTo   *time.Time   `query:"dateTo"`
+}
+
+func (v taskListQueryVars) Pagination() pagination.Pagination {
+	return pagination.Pagination{
+		Limit:  v.Limit,
+		Offset: v.Offset,
+	}
 }
 
 func (v taskListQueryVars) Filter() task.GetAllFilter {
@@ -140,7 +148,7 @@ func GetTasksByBrigade(s *task.Service) gorouter.Handler {
 			return fmt.Errorf("failed to read query params: %w", err)
 		}
 
-		response, err := s.GetByBrigade(c.Ctx(), vars.BrigadeID, queryVars.Pagination, queryVars.Filter())
+		response, err := s.GetByBrigade(c.Ctx(), vars.BrigadeID, queryVars.Pagination(), queryVars.Filter())
 		if err != nil {
 			return fmt.Errorf("failed to get tasks by brigade id: %w", err)
 		}
@@ -176,7 +184,7 @@ func GetTasksByBrigadeExtended(s *task.Service) gorouter.Handler {
 			return fmt.Errorf("failed to read query params: %w", err)
 		}
 
-		response, err := s.GetByBrigadeExtended(c.Ctx(), vars.BrigadeID, queryVars.Pagination, queryVars.Filter())
+		response, err := s.GetByBrigadeExtended(c.Ctx(), vars.BrigadeID, queryVars.Pagination(), queryVars.Filter())
 		if err != nil {
 			return fmt.Errorf("failed to get extended tasks by brigade id: %w", err)
 		}
@@ -206,7 +214,7 @@ func GetAllTasks(s *task.Service) gorouter.Handler {
 			return fmt.Errorf("failed to read query params: %w", err)
 		}
 
-		response, err := s.GetAll(c.Ctx(), vars.Pagination, vars.Filter())
+		response, err := s.GetAll(c.Ctx(), vars.Pagination(), vars.Filter())
 		if err != nil {
 			return fmt.Errorf("failed to get all tasks: %w", err)
 		}
