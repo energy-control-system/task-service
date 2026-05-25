@@ -79,14 +79,31 @@ func (r *Repository) GetByBrigade(ctx context.Context, brigadeID int, page pagin
 //go:embed sql/get_all.sql
 var getAllSQL string
 
-func (r *Repository) GetAll(ctx context.Context, page pagination.Pagination) ([]task.Task, error) {
+func (r *Repository) GetAll(ctx context.Context, page pagination.Pagination, filter task.GetAllFilter) ([]task.Task, error) {
 	var tasks []Task
-	err := r.db.SelectContext(ctx, &tasks, getAllSQL, page.LimitArg(), page.Offset)
+	err := r.db.SelectContext(
+		ctx,
+		&tasks,
+		getAllSQL,
+		statusArg(filter),
+		filter.DateFrom,
+		filter.DateTo,
+		page.LimitArg(),
+		page.Offset,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("r.db.SelectContext: %w", err)
 	}
 
 	return MapSliceFromDB(tasks), nil
+}
+
+func statusArg(filter task.GetAllFilter) any {
+	if filter.Status == nil {
+		return nil
+	}
+
+	return int(*filter.Status)
 }
 
 //go:embed sql/start_task.sql

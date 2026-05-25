@@ -46,3 +46,9 @@ type AssignToBrigadeRequest struct {
 	TaskID    int `json:"TaskID"`
 	BrigadeID int `json:"BrigadeID"`
 }
+
+type GetAllFilter struct {
+	Status   *Status
+	DateFrom *time.Time
+	DateTo   *time.Time
+}

@@ -4,14 +4,16 @@ import (
 	"context"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/sunshineOfficial/golib/goctx"
 	"github.com/sunshineOfficial/golib/pagination"
 )
 
 type mockRepository struct {
-	task  Task
-	tasks []Task
+	task         Task
+	tasks        []Task
+	gotAllFilter GetAllFilter
 }
 
 func (m *mockRepository) Add(context.Context, AddRequest) (Task, error) {
@@ -26,8 +28,9 @@ func (m *mockRepository) GetByBrigade(context.Context, int, pagination.Paginatio
 	return m.tasks, nil
 }
 
-func (m *mockRepository) GetAll(context.Context, pagination.Pagination) ([]Task, error) {
-	return nil, nil
+func (m *mockRepository) GetAll(_ context.Context, _ pagination.Pagination, filter GetAllFilter) ([]Task, error) {
+	m.gotAllFilter = filter
+	return m.tasks, nil
 }
 
 func (m *mockRepository) StartTask(context.Context, int) (Task, error) {
@@ -99,5 +102,49 @@ func TestGetByIDExtendedGetsTaskContract(t *testing.T) {
 	}
 	if got.Task.ID != 1 || got.Contract.ID != 100 {
 		t.Fatalf("extended task = %+v, want task 1 with contract 100", got)
+	}
+}
+
+func TestGetAllPassesStatusFilterToRepository(t *testing.T) {
+	repository := &mockRepository{tasks: []Task{
+		{ID: 1, Status: StatusInWork},
+	}}
+	service := NewService(repository, nil, nil)
+	status := StatusInWork
+
+	got, err := service.GetAll(goctx.Wrap(context.Background()), pagination.Pagination{}, GetAllFilter{Status: &status})
+	if err != nil {
+		t.Fatalf("GetAll returned error: %v", err)
+	}
+
+	if len(got) != 1 || got[0].Status != StatusInWork {
+		t.Fatalf("tasks = %+v, want one in-work task", got)
+	}
+	if repository.gotAllFilter.Status == nil || *repository.gotAllFilter.Status != StatusInWork {
+		t.Fatalf("repository status filter = %v, want %v", repository.gotAllFilter.Status, StatusInWork)
+	}
+}
+
+func TestGetAllPassesDateFilterToRepository(t *testing.T) {
+	repository := &mockRepository{tasks: []Task{
+		{ID: 1},
+	}}
+	service := NewService(repository, nil, nil)
+	dateFrom := time.Date(2026, time.May, 1, 0, 0, 0, 0, time.UTC)
+	dateTo := time.Date(2026, time.May, 31, 23, 59, 59, 0, time.UTC)
+
+	_, err := service.GetAll(goctx.Wrap(context.Background()), pagination.Pagination{}, GetAllFilter{
+		DateFrom: &dateFrom,
+		DateTo:   &dateTo,
+	})
+	if err != nil {
+		t.Fatalf("GetAll returned error: %v", err)
+	}
+
+	if repository.gotAllFilter.DateFrom == nil || !repository.gotAllFilter.DateFrom.Equal(dateFrom) {
+		t.Fatalf("repository dateFrom filter = %v, want %v", repository.gotAllFilter.DateFrom, dateFrom)
+	}
+	if repository.gotAllFilter.DateTo == nil || !repository.gotAllFilter.DateTo.Equal(dateTo) {
+		t.Fatalf("repository dateTo filter = %v, want %v", repository.gotAllFilter.DateTo, dateTo)
 	}
 }

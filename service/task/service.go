@@ -119,12 +119,12 @@ func (s *Service) GetByBrigadeExtended(ctx goctx.Context, brigadeID int, page pa
 	return result, nil
 }
 
-func (s *Service) GetAll(ctx goctx.Context, page pagination.Pagination) ([]Task, error) {
+func (s *Service) GetAll(ctx goctx.Context, page pagination.Pagination, filter GetAllFilter) ([]Task, error) {
 	if err := page.Validate(); err != nil {
 		return nil, fmt.Errorf("validate pagination: %w", err)
 	}
 
-	tasks, err := s.repository.GetAll(ctx, page)
+	tasks, err := s.repository.GetAll(ctx, page, filter)
 	if err != nil {
 		return nil, fmt.Errorf("get all tasks from db: %w", err)
 	}

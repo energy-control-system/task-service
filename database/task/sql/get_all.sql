@@ -9,5 +9,8 @@ select id,
        created_at,
        updated_at
 from tasks
+where ($1::integer is null or status = $1)
+  and ($2::timestamptz is null or plan_visit_at >= $2)
+  and ($3::timestamptz is null or plan_visit_at <= $3)
 order by id
-limit $1 offset $2;
+limit $4 offset $5;

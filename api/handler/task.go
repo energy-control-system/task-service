@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"task-service/service/task"
+	"time"
 
 	"github.com/sunshineOfficial/golib/gohttp/gorouter"
 	"github.com/sunshineOfficial/golib/pagination"
@@ -171,18 +172,30 @@ func GetTasksByBrigadeExtended(s *task.Service) gorouter.Handler {
 // @Produce json
 // @Param limit query int false "Maximum number of items to return; 0 means no limit"
 // @Param offset query int false "Number of items to skip"
+// @Param status query int false "Task status filter"
+// @Param dateFrom query string false "Plan visit date lower bound" Format(date-time)
+// @Param dateTo query string false "Plan visit date upper bound" Format(date-time)
 // @Success 200 {array} task.Task
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
 // @Router /tasks [get]
 func GetAllTasks(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
-		var vars pagination.Pagination
+		var vars struct {
+			pagination.Pagination
+			Status   *task.Status `query:"status"`
+			DateFrom *time.Time   `query:"dateFrom"`
+			DateTo   *time.Time   `query:"dateTo"`
+		}
 		if err := c.Vars(&vars); err != nil {
-			return fmt.Errorf("failed to read pagination: %w", err)
+			return fmt.Errorf("failed to read query params: %w", err)
 		}
 
-		response, err := s.GetAll(c.Ctx(), vars)
+		response, err := s.GetAll(c.Ctx(), vars.Pagination, task.GetAllFilter{
+			Status:   vars.Status,
+			DateFrom: vars.DateFrom,
+			DateTo:   vars.DateTo,
+		})
 		if err != nil {
 			return fmt.Errorf("failed to get all tasks: %w", err)
 		}
