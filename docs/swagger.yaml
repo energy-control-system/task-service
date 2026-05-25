@@ -282,11 +282,9 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-              - type: object
-              - $ref: '#/components/schemas/task-service_service_task.AddRequest'
-                description: Task creation payload
-                summary: request
+              $ref: '#/components/schemas/task-service_service_task.AddRequest'
+              description: Task creation payload
+              summary: request
         description: Task creation payload
         required: true
       responses:
@@ -433,11 +431,9 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-              - type: object
-              - $ref: '#/components/schemas/task.AssignToBrigadeRequest'
-                description: Assignment payload
-                summary: request
+              $ref: '#/components/schemas/task.AssignToBrigadeRequest'
+              description: Assignment payload
+              summary: request
         description: Assignment payload
         required: true
       responses:

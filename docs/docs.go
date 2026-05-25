@@ -427,16 +427,9 @@ const docTemplate = `{
                     "content": {
                         "application/json": {
                             "schema": {
-                                "oneOf": [
-                                    {
-                                        "type": "object"
-                                    },
-                                    {
-                                        "$ref": "#/components/schemas/task-service_service_task.AddRequest",
-                                        "summary": "request",
-                                        "description": "Task creation payload"
-                                    }
-                                ]
+                                "$ref": "#/components/schemas/task-service_service_task.AddRequest",
+                                "summary": "request",
+                                "description": "Task creation payload"
                             }
                         }
                     },
@@ -488,16 +481,9 @@ const docTemplate = `{
                     "content": {
                         "application/json": {
                             "schema": {
-                                "oneOf": [
-                                    {
-                                        "type": "object"
-                                    },
-                                    {
-                                        "$ref": "#/components/schemas/task.AssignToBrigadeRequest",
-                                        "summary": "request",
-                                        "description": "Assignment payload"
-                                    }
-                                ]
+                                "$ref": "#/components/schemas/task.AssignToBrigadeRequest",
+                                "summary": "request",
+                                "description": "Assignment payload"
                             }
                         }
                     },

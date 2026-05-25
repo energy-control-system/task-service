@@ -14,7 +14,6 @@ import (
 // @Summary Create task
 // @Description Creates an inspection task for a metering object.
 // @Tags tasks
-// @Accept json
 // @Produce json
 // @Param request body task.AddRequest true "Task creation payload"
 // @Success 200 {object} task.Task
@@ -235,7 +234,6 @@ func StartTask(s *task.Service) gorouter.Handler {
 // @Summary Assign task to brigade
 // @Description Assigns an inspection task to an inspector brigade.
 // @Tags tasks
-// @Accept json
 // @Produce json
 // @Param request body task.AssignToBrigadeRequest true "Assignment payload"
 // @Success 200 {object} task.Task
