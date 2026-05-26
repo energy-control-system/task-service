@@ -320,7 +320,7 @@ func StartTask(s *task.Service) gorouter.Handler {
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 404 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
-// @Router /tasks/assign [patch]
+// @Router /tasks/assign [post]
 func AssignTaskToBrigade(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
 		var request task.AssignToBrigadeRequest

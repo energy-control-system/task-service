@@ -486,7 +486,7 @@ const docTemplate = `{
             }
         },
         "/tasks/assign": {
-            "patch": {
+            "post": {
                 "description": "Assigns an inspection task to an inspector brigade.",
                 "requestBody": {
                     "content": {
