@@ -123,6 +123,9 @@ func (s *Service) GetAll(ctx goctx.Context, page pagination.Pagination, filter G
 	if err := page.Validate(); err != nil {
 		return nil, fmt.Errorf("validate pagination: %w", err)
 	}
+	if err := filter.Sort.Validate(); err != nil {
+		return nil, fmt.Errorf("validate sort: %w", err)
+	}
 
 	tasks, err := s.repository.GetAll(ctx, page, filter)
 	if err != nil {

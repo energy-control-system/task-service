@@ -12,5 +12,8 @@ from tasks
 where ($1::integer is null or status = $1)
   and ($2::timestamptz is null or plan_visit_at >= $2)
   and ($3::timestamptz is null or plan_visit_at <= $3)
-order by id
-limit $4 offset $5;
+order by
+    case when $4 = 'asc' then plan_visit_at end asc nulls last,
+    case when $4 = 'desc' then plan_visit_at end desc nulls last,
+    id
+limit $5 offset $6;

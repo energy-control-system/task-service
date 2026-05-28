@@ -98,6 +98,7 @@ func (r *Repository) GetAll(ctx context.Context, page pagination.Pagination, fil
 		statusArg(filter),
 		filter.DateFrom,
 		filter.DateTo,
+		filter.Sort,
 		page.LimitArg(),
 		page.Offset,
 	)

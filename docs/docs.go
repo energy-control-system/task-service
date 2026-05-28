@@ -390,6 +390,14 @@ const docTemplate = `{
                             "format": "date-time",
                             "type": "string"
                         }
+                    },
+                    {
+                        "description": "Sort by PlanVisitAt direction: asc or desc",
+                        "in": "query",
+                        "name": "sort",
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {

@@ -1,6 +1,7 @@
 package task
 
 import (
+	"fmt"
 	"task-service/cluster/subscriber"
 	"time"
 )
@@ -56,4 +57,21 @@ type GetAllFilter struct {
 	Status   *Status
 	DateFrom *time.Time
 	DateTo   *time.Time
+	Sort     SortDirection
+}
+
+type SortDirection string
+
+const (
+	SortAsc  SortDirection = "asc"
+	SortDesc SortDirection = "desc"
+)
+
+func (s SortDirection) Validate() error {
+	switch s {
+	case "", SortAsc, SortDesc:
+		return nil
+	default:
+		return fmt.Errorf("sort must be empty, %q, or %q", SortAsc, SortDesc)
+	}
 }

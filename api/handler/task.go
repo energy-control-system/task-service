@@ -121,6 +121,31 @@ func (v taskListQueryVars) Filter() task.GetAllFilter {
 	}
 }
 
+type taskAllListQueryVars struct {
+	Limit    int                `query:"limit"`
+	Offset   int                `query:"offset"`
+	Status   *task.Status       `query:"status"`
+	DateFrom *time.Time         `query:"dateFrom"`
+	DateTo   *time.Time         `query:"dateTo"`
+	Sort     task.SortDirection `query:"sort"`
+}
+
+func (v taskAllListQueryVars) Pagination() pagination.Pagination {
+	return pagination.Pagination{
+		Limit:  v.Limit,
+		Offset: v.Offset,
+	}
+}
+
+func (v taskAllListQueryVars) Filter() task.GetAllFilter {
+	return task.GetAllFilter{
+		Status:   v.Status,
+		DateFrom: v.DateFrom,
+		DateTo:   v.DateTo,
+		Sort:     v.Sort,
+	}
+}
+
 // GetTasksByBrigade godoc
 // @Summary List tasks by brigade
 // @Description Returns tasks assigned to a brigade.
@@ -203,13 +228,14 @@ func GetTasksByBrigadeExtended(s *task.Service) gorouter.Handler {
 // @Param status query int false "Task status filter"
 // @Param dateFrom query string false "Plan visit date lower bound" Format(date-time)
 // @Param dateTo query string false "Plan visit date upper bound" Format(date-time)
+// @Param sort query string false "Sort by PlanVisitAt direction: asc or desc"
 // @Success 200 {array} task.Task
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
 // @Router /tasks [get]
 func GetAllTasks(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
-		var vars taskListQueryVars
+		var vars taskAllListQueryVars
 		if err := c.Vars(&vars); err != nil {
 			return fmt.Errorf("failed to read query params: %w", err)
 		}

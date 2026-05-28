@@ -16,6 +16,7 @@ type mockRepository struct {
 	tasks            []Task
 	gotAllFilter     GetAllFilter
 	gotBrigadeFilter GetAllFilter
+	getAllCalled     bool
 	deletedID        int
 }
 
@@ -33,6 +34,7 @@ func (m *mockRepository) GetByBrigade(_ context.Context, _ int, _ pagination.Pag
 }
 
 func (m *mockRepository) GetAll(_ context.Context, _ pagination.Pagination, filter GetAllFilter) ([]Task, error) {
+	m.getAllCalled = true
 	m.gotAllFilter = filter
 	return m.tasks, nil
 }
@@ -218,5 +220,34 @@ func TestGetAllPassesDateFilterToRepository(t *testing.T) {
 	}
 	if repository.gotAllFilter.DateTo == nil || !repository.gotAllFilter.DateTo.Equal(dateTo) {
 		t.Fatalf("repository dateTo filter = %v, want %v", repository.gotAllFilter.DateTo, dateTo)
+	}
+}
+
+func TestGetAllPassesSortToRepository(t *testing.T) {
+	repository := &mockRepository{tasks: []Task{
+		{ID: 1},
+	}}
+	service := NewService(repository, nil, nil)
+
+	_, err := service.GetAll(goctx.Wrap(context.Background()), pagination.Pagination{}, GetAllFilter{Sort: SortDesc})
+	if err != nil {
+		t.Fatalf("GetAll returned error: %v", err)
+	}
+
+	if repository.gotAllFilter.Sort != SortDesc {
+		t.Fatalf("repository sort = %q, want %q", repository.gotAllFilter.Sort, SortDesc)
+	}
+}
+
+func TestGetAllRejectsInvalidSort(t *testing.T) {
+	repository := &mockRepository{}
+	service := NewService(repository, nil, nil)
+
+	_, err := service.GetAll(goctx.Wrap(context.Background()), pagination.Pagination{}, GetAllFilter{Sort: SortDirection("newest")})
+	if err == nil {
+		t.Fatal("GetAll returned nil error, want invalid sort error")
+	}
+	if repository.getAllCalled {
+		t.Fatal("repository.GetAll was called for invalid sort")
 	}
 }

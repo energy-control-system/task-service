@@ -259,6 +259,11 @@ paths:
         schema:
           format: date-time
           type: string
+      - description: 'Sort by PlanVisitAt direction: asc or desc'
+        in: query
+        name: sort
+        schema:
+          type: string
       responses:
         "200":
           content:
