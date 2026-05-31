@@ -10,6 +10,7 @@ import (
 	"github.com/sunshineOfficial/golib/gohttp/gorouter"
 	"github.com/sunshineOfficial/golib/gohttp/gorouter/middleware"
 	"github.com/sunshineOfficial/golib/gohttp/gorouter/plugin"
+	"github.com/sunshineOfficial/golib/gohttp/gorouter/status"
 	"github.com/sunshineOfficial/golib/gohttp/goserver"
 	"github.com/sunshineOfficial/golib/golog"
 )
@@ -17,6 +18,7 @@ import (
 type ServerBuilder struct {
 	server goserver.Server
 	router *gorouter.Router
+	auth   gorouter.Middleware
 }
 
 func NewServerBuilder(ctx context.Context, log golog.Logger, settings config.Settings) *ServerBuilder {
@@ -27,6 +29,7 @@ func NewServerBuilder(ctx context.Context, log golog.Logger, settings config.Set
 			middleware.Recover,
 			middleware.LogError,
 		),
+		auth: middleware.IsAnyAuthorized(status.UnauthorizedHandler),
 	}
 }
 
@@ -36,16 +39,16 @@ func (s *ServerBuilder) AddDebug() {
 
 func (s *ServerBuilder) AddTasks(service *task.Service) {
 	r := s.router.SubRouter("/tasks")
-	r.HandlePost("", handler.AddTask(service))
-	r.HandleGet("/{id}/extended", handler.GetTaskByIDExtended(service))
+	r.HandlePost("", handler.AddTask(service)).Use(s.auth)
+	r.HandleGet("/{id}/extended", handler.GetTaskByIDExtended(service)).Use(s.auth)
 	r.HandleGet("/{id}", handler.GetTaskByID(service))
-	r.HandlePatch("/{id}", handler.UpdateTask(service))
-	r.HandleDelete("/{id}", handler.DeleteTask(service))
-	r.HandleGet("/brigade/{brigadeID}/extended", handler.GetTasksByBrigadeExtended(service))
+	r.HandlePatch("/{id}", handler.UpdateTask(service)).Use(s.auth)
+	r.HandleDelete("/{id}", handler.DeleteTask(service)).Use(s.auth)
+	r.HandleGet("/brigade/{brigadeID}/extended", handler.GetTasksByBrigadeExtended(service)).Use(s.auth)
 	r.HandleGet("/brigade/{brigadeID}", handler.GetTasksByBrigade(service))
-	r.HandleGet("", handler.GetAllTasks(service))
-	r.HandlePatch("/{id}/start", handler.StartTask(service))
-	r.HandlePost("/assign", handler.AssignTaskToBrigade(service))
+	r.HandleGet("", handler.GetAllTasks(service)).Use(s.auth)
+	r.HandlePatch("/{id}/start", handler.StartTask(service)).Use(s.auth)
+	r.HandlePost("/assign", handler.AssignTaskToBrigade(service)).Use(s.auth)
 }
 
 func (s *ServerBuilder) Build() goserver.Server {

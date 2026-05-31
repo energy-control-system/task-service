@@ -16,6 +16,10 @@ import (
 // @version 1.0
 // @description API for managing inspection tasks and brigade assignments.
 // @BasePath /api/task-service
+// @securityDefinitions.apikey bearer
+// @in header
+// @name Authorization
+// @description JWT authorization header. Use Bearer <token>.
 func main() {
 	configureDecimal()
 
