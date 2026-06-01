@@ -19,7 +19,6 @@ import (
 // @Success 200 {object} task.Task
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
-// @Security bearer
 // @Router /tasks [post]
 func AddTask(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
@@ -78,7 +77,6 @@ func GetTaskByID(s *task.Service) gorouter.Handler {
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 404 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
-// @Security bearer
 // @Router /tasks/{id}/extended [get]
 func GetTaskByIDExtended(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
@@ -198,7 +196,6 @@ func GetTasksByBrigade(s *task.Service) gorouter.Handler {
 // @Success 200 {array} task.TaskExtended
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
-// @Security bearer
 // @Router /tasks/brigade/{brigadeID}/extended [get]
 func GetTasksByBrigadeExtended(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
@@ -235,7 +232,6 @@ func GetTasksByBrigadeExtended(s *task.Service) gorouter.Handler {
 // @Success 200 {array} task.Task
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
-// @Security bearer
 // @Router /tasks [get]
 func GetAllTasks(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
@@ -264,7 +260,6 @@ func GetAllTasks(s *task.Service) gorouter.Handler {
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 404 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
-// @Security bearer
 // @Router /tasks/{id} [patch]
 func UpdateTask(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
@@ -297,7 +292,6 @@ func UpdateTask(s *task.Service) gorouter.Handler {
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 404 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
-// @Security bearer
 // @Router /tasks/{id} [delete]
 func DeleteTask(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
@@ -325,7 +319,6 @@ func DeleteTask(s *task.Service) gorouter.Handler {
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 404 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
-// @Security bearer
 // @Router /tasks/{id}/start [patch]
 func StartTask(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {
@@ -353,7 +346,6 @@ func StartTask(s *task.Service) gorouter.Handler {
 // @Failure 400 {object} gorouter.ErrorResponse
 // @Failure 404 {object} gorouter.ErrorResponse
 // @Failure 500 {object} gorouter.ErrorResponse
-// @Security bearer
 // @Router /tasks/assign [post]
 func AssignTaskToBrigade(s *task.Service) gorouter.Handler {
 	return func(c gorouter.Context) error {

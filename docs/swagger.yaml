@@ -219,12 +219,6 @@ components:
         Task:
           $ref: '#/components/schemas/task-service_service_task.Task'
       type: object
-  securitySchemes:
-    bearer:
-      description: JWT authorization header. Use Bearer <token>.
-      in: header
-      name: Authorization
-      type: apiKey
 externalDocs:
   description: ""
   url: ""
@@ -291,8 +285,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-      security:
-      - bearer: []
       summary: List tasks
       tags:
       - tasks
@@ -326,8 +318,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-      security:
-      - bearer: []
       summary: Create task
       tags:
       - tasks
@@ -366,8 +356,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-      security:
-      - bearer: []
       summary: Delete task
       tags:
       - tasks
@@ -451,8 +439,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-      security:
-      - bearer: []
       summary: Update task
       tags:
       - tasks
@@ -492,8 +478,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-      security:
-      - bearer: []
       summary: Get task by ID with contract data
       tags:
       - tasks
@@ -532,8 +516,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-      security:
-      - bearer: []
       summary: Start task
       tags:
       - tasks
@@ -574,8 +556,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-      security:
-      - bearer: []
       summary: Assign task to brigade
       tags:
       - tasks
@@ -699,8 +679,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/gorouter.ErrorResponse'
           description: Internal Server Error
-      security:
-      - bearer: []
       summary: List tasks by brigade with contract data
       tags:
       - tasks

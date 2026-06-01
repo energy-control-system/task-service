@@ -9,31 +9,38 @@ import (
 	"github.com/sunshineOfficial/golib/golog"
 )
 
-func TestTaskAuthorizationPolicy(t *testing.T) {
+func TestTaskRoutesAllowUnauthenticatedRequests(t *testing.T) {
 	builder := NewServerBuilder(t.Context(), golog.NewLogger("test"), config.Settings{
 		Port: 80,
 	})
 	builder.AddTasks(nil)
 
-	t.Run("task creation requires authorization", func(t *testing.T) {
-		response := httptest.NewRecorder()
-		request := httptest.NewRequest(http.MethodPost, "/tasks", nil)
+	routes := []struct {
+		method string
+		path   string
+	}{
+		{method: http.MethodPost, path: "/tasks"},
+		{method: http.MethodGet, path: "/tasks/1/extended"},
+		{method: http.MethodGet, path: "/tasks/1"},
+		{method: http.MethodPatch, path: "/tasks/1"},
+		{method: http.MethodDelete, path: "/tasks/1"},
+		{method: http.MethodGet, path: "/tasks/brigade/1/extended"},
+		{method: http.MethodGet, path: "/tasks/brigade/1"},
+		{method: http.MethodGet, path: "/tasks"},
+		{method: http.MethodPatch, path: "/tasks/1/start"},
+		{method: http.MethodPost, path: "/tasks/assign"},
+	}
 
-		builder.router.ServeHTTP(response, request)
+	for _, route := range routes {
+		t.Run(route.method+" "+route.path, func(t *testing.T) {
+			response := httptest.NewRecorder()
+			request := httptest.NewRequest(route.method, route.path, nil)
 
-		if response.Code != http.StatusUnauthorized {
-			t.Fatalf("status = %d, want %d", response.Code, http.StatusUnauthorized)
-		}
-	})
+			builder.router.ServeHTTP(response, request)
 
-	t.Run("get by id allows internal calls without authorization", func(t *testing.T) {
-		response := httptest.NewRecorder()
-		request := httptest.NewRequest(http.MethodGet, "/tasks/1", nil)
-
-		builder.router.ServeHTTP(response, request)
-
-		if response.Code == http.StatusUnauthorized {
-			t.Fatalf("status = %d, route must stay open for internal service calls", response.Code)
-		}
-	})
+			if response.Code == http.StatusUnauthorized {
+				t.Fatalf("status = %d, route must be open without authorization", response.Code)
+			}
+		})
+	}
 }
